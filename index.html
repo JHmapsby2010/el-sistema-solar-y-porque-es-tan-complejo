@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌌 Sistema Solar</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #f0f0f0;
+        background: radial-gradient(circle at 20% 30%, #0b0f1c, #020205);
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+    }
+
+    .star {
+        position: fixed;
+        background: white;
+        border-radius: 50%;
+        z-index: -2;
+        will-change: transform, opacity;
+        transform: translateZ(0);
+    }
+
+    .star-fast {
+        animation: twinkleFast 4s infinite ease-in-out;
+    }
+    .star-med {
+        animation: twinkleMed 6s infinite ease-in-out;
+    }
+    .star-slow {
+        animation: twinkleSlow 8s infinite ease-in-out;
+    }
+
+    @keyframes twinkleFast {
+        0%, 100% { opacity: 0.2; transform: scale(0.8) translateZ(0); }
+        50% { opacity: 1; transform: scale(1.2) translateZ(0); }
+    }
+    @keyframes twinkleMed {
+        0%, 100% { opacity: 0.3; transform: scale(0.9) translateZ(0); }
+        50% { opacity: 0.9; transform: scale(1.1) translateZ(0); }
+    }
+    @keyframes twinkleSlow {
+        0%, 100% { opacity: 0.4; transform: scale(1.0) translateZ(0); }
+        50% { opacity: 0.8; transform: scale(1.05) translateZ(0); }
+    }
+
+    .nebula {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at 70% 20%, rgba(70, 0, 130, 0.15), transparent 60%),
+                    radial-gradient(circle at 30% 80%, rgba(0, 50, 100, 0.2), transparent 70%);
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    .planeta {
+        position: fixed;
+        border-radius: 50%;
+        z-index: -1;
+        opacity: 0.85;
+        box-shadow: 0 0 20px rgba(255,255,255,0.2), 
+                    0 0 0 2px rgba(255,255,255,0.1);
+        pointer-events: none;
+    }
+
+    .menu-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        font-size: 28px;
+        cursor: pointer;
+        z-index: 1000;
+        background: rgba(10, 20, 40, 0.6);
+        backdrop-filter: blur(5px);
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        border: 1px solid rgba(255,215,0,0.3);
+        color: #ffd700;
+        transition: 0.2s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        will-change: transform;
+    }
+
+    .menu-btn:hover {
+        background: rgba(30, 50, 80, 0.8);
+        border-color: #ffd700;
+        transform: scale(1.05);
+    }
+
+    nav {
+        position: fixed;
+        left: -260px;
+        top: 0;
+        width: 240px;
+        height: 100vh;
+        background: rgba(5, 10, 25, 0.85);
+        backdrop-filter: blur(12px);
+        padding-top: 80px;
+        transition: left 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
+        z-index: 999;
+        border-right: 1px solid rgba(255, 215, 0, 0.3);
+        box-shadow: 5px 0 25px rgba(0,0,0,0.7);
+    }
+
+    nav.active {
+        left: 0;
+    }
+
+    nav a {
+        display: block;
+        color: #e0e0ff;
+        padding: 15px 25px;
+        text-decoration: none;
+        font-size: 1.1rem;
+        font-weight: 500;
+        border-left: 4px solid transparent;
+        transition: all 0.15s;
+        margin: 5px 0;
+    }
+
+    nav a:hover {
+        background: rgba(100, 150, 255, 0.15);
+        border-left: 4px solid #ffd700;
+        color: white;
+        padding-left: 30px;
+    }
+
+    .contenido {
+        padding: 30px 25px;
+        max-width: 950px;
+        margin: auto;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(2px);
+        border-radius: 20px;
+        box-shadow: 0 0 40px rgba(0,0,0,0.6);
+        margin-top: 40px;
+        margin-bottom: 40px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    h1 {
+        text-align: center;
+        color: #ffd966;
+        text-shadow: 0 0 15px #ffaa00;
+        font-size: 2.5rem;
+        letter-spacing: 2px;
+        margin-bottom: 40px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 20px;
+    }
+
+    h2 {
+        color: #7ec8ff;
+        margin-top: 50px;
+        padding-left: 10px;
+        border-left: 8px solid #ffaa00;
+        text-shadow: 0 0 8px rgba(0,160,255,0.5);
+        scroll-margin-top: 20px;
+    }
+
+    p {
+        text-align: justify;
+        line-height: 1.9;
+        font-size: 1.1rem;
+        color: #ddd;
+    }
+
+    .img-container {
+        text-align: center;
+        margin: 30px 0;
+    }
+
+    img {
+        width: 85%;
+        max-width: 650px;
+        display: block;
+        margin: 15px auto;
+        border-radius: 15px;
+        border: 1px solid #445566;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: zoom-in;
+    }
+
+    img:hover {
+        transform: scale(1.01);
+        box-shadow: 0 5px 40px rgba(100, 180, 255, 0.2);
+        border-color: #aaccff;
+    }
+
+    .section-indicator {
+        position: fixed;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 500;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        background: rgba(255,255,255,0.3);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: 0.2s;
+        border: 1px solid #fff;
+    }
+
+    .dot.active {
+        background: #ffd700;
+        box-shadow: 0 0 15px #ffaa00;
+        transform: scale(1.5);
+    }
+
+    @media (max-width: 600px) {
+        h1 { font-size: 2rem; }
+        p { font-size: 1rem; }
+        .contenido { padding: 15px; }
+        .section-indicator { display: none; }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="nebula"></div>
+
+<div class="menu-btn" id="menuBtn" onclick="toggleMenu()">☰</div>
+
+<nav id="menu">
+    <a href="#intro" onclick="toggleMenu()">✨ Introducción</a>
+    <a href="#gravedad" onclick="toggleMenu()">🌍 Gravedad</a>
+    <a href="#planetas" onclick="toggleMenu()">🪐 Planetas</a>
+    <a href="#zonas" onclick="toggleMenu()">☄️ Zonas</a>
+    <a href="#origen" onclick="toggleMenu()">💫 Origen</a>
+    <a href="#movimiento" onclick="toggleMenu()">🌀 Movimiento</a>
+    <a href="#conclusion" onclick="toggleMenu()">🔭 Conclusión</a>
+</nav>
+
+<div class="section-indicator" id="indicator"></div>
+
+<div class="contenido">
+    <h1>🌞 Nuestro sistema solar y por qué es tan complejo</h1>
+
+    <h2 id="intro">Introducción</h2>
+    <p>El Sistema Solar es el lugar del universo donde se encuentra nuestro planeta, la Tierra, y todo lo que la rodea. Está formado por el Sol, los ocho planetas principales, sus lunas, asteroides, cometas y una gran cantidad de polvo y rocas que giran constantemente alrededor del Sol. A simple vista, especialmente en ilustraciones escolares, puede parecer algo sencillo: un Sol en el centro y varios planetas girando a su alrededor en trayectorias ordenadas. Sin embargo, esta representación es solo una versión simplificada de una realidad mucho más compleja y fascinante.</p>
+    <div class="img-container"><img src="https://images-assets.nasa.gov/image/PIA03149/PIA03149~orig.jpg" alt="Sistema Solar" loading="lazy"></div>
+
+    <h2 id="gravedad">La gravedad como fuerza principal</h2>
+    <p>Una de las principales razones por las que el sistema solar es tan complejo es la gravedad. La gravedad es una fuerza fundamental que actúa entre todos los cuerpos con masa. En el caso del sistema solar, el Sol, al ser el objeto más grande y masivo, ejerce una fuerza gravitatoria muy fuerte que mantiene a los planetas en órbita a su alrededor. Sin esta fuerza, los planetas no seguirían trayectorias definidas y simplemente se alejarían en línea recta por el espacio. No obstante, la gravedad no actúa únicamente desde el Sol. Cada planeta también tiene su propia gravedad, lo que significa que todos los objetos dentro del sistema solar interactúan entre sí. Por ejemplo, Júpiter, el planeta más grande, tiene una influencia gravitatoria tan significativa que puede desviar asteroides, atraer cometas e incluso proteger parcialmente a los planetas interiores de posibles impactos.</p>
+    <div class="img-container"><img src="https://images-assets.nasa.gov/image/PIA02879/PIA02879~orig.jpg" alt="Sol y gravedad" loading="lazy"></div>
+
+    <h2 id="planetas">Diversidad de los planetas</h2>
+    <p>Otra razón importante de la complejidad del sistema solar es la gran diversidad de sus componentes. No todos los planetas son iguales. Los planetas rocosos, como la Tierra, Marte, Venus y Mercurio, tienen superficies sólidas y están compuestos principalmente de minerales y metales. En contraste, los gigantes gaseosos como Júpiter y Saturno, y los gigantes helados como Urano y Neptuno, están formados principalmente por gases y materiales volátiles. Además, muchos de estos planetas poseen sistemas de lunas, algunas de las cuales son tan grandes y complejas como planetas pequeños. También existen anillos, atmósferas de distintas composiciones y condiciones extremas que hacen que cada planeta sea único.</p>
+    <div class="img-container"><img src="https://images-assets.nasa.gov/image/PIA01364/PIA01364~orig.jpg" alt="Planetas" loading="lazy"></div>
+
+    <h2 id="zonas">Regiones con objetos menores</h2>
+    <p>El sistema solar también incluye regiones llenas de objetos pequeños que contribuyen a su complejidad. Entre Marte y Júpiter se encuentra el Cinturón de Asteroides, una zona con miles de rocas espaciales de diferentes tamaños que orbitan el Sol. Más allá de Neptuno se localiza el Cinturón de Kuiper, una región aún más extensa que contiene cuerpos helados y planetas enanos como Plutón. Estas áreas muestran que el sistema solar no está compuesto únicamente por planetas, sino por una gran variedad de objetos que interactúan entre sí.</p>
+    <div class="img-container"><img src="https://images-assets.nasa.gov/image/PIA17046/PIA17046~orig.jpg" alt="Cinturón de Kuiper" loading="lazy"></div>
+
+    <h2 id="origen">Origen y formación del sistema solar</h2>
+    <p>Se estima que se formó hace aproximadamente 4,600 millones de años a partir de una nube gigante de gas y polvo conocida como nebulosa solar. Con el tiempo, esta nube comenzó a colapsar debido a la gravedad, formando un disco giratorio donde el material se fue acumulando poco a poco. En el centro se formó el Sol, mientras que en las regiones externas se formaron los planetas y otros cuerpos. Este proceso no fue tranquilo ni uniforme, ya que hubo múltiples colisiones, cambios de órbita y reorganizaciones del sistema.</p>
+    <div class="img-container"><img src="https://images-assets.nasa.gov/image/PIA18033/PIA18033~orig.jpg" alt="Nebulosa solar" loading="lazy"></div>
+
+    <h2 id="movimiento">Movimiento dentro de la galaxia</h2>
+    <p>Además, el sistema solar no es un sistema estático. Aunque desde nuestra perspectiva parece estable, en realidad está en constante movimiento. Todos los planetas orbitan el Sol, pero también el sistema solar entero se desplaza dentro de la galaxia conocida como la Vía Láctea. Este movimiento implica que nuestro sistema forma parte de una estructura mucho mayor y dinámica.</p>
+    <div class="img-container"><img src="https://images-assets.nasa.gov/image/PIA12235/PIA12235~orig.jpg" alt="Vía Láctea" loading="lazy"></div>
+
+    <h2 id="conclusion">Conclusión</h2>
+    <p>En conclusión, el sistema solar es complejo debido a la interacción de múltiples fuerzas como la gravedad, la gran diversidad de sus componentes, la existencia de regiones con objetos pequeños, su origen dinámico y su constante movimiento dentro de la galaxia. Lejos de ser un sistema simple, es un entorno lleno de procesos, cambios y misterios que continúan despertando la curiosidad de científicos y observadores. Estudiarlo no solo nos ayuda a entender mejor nuestro lugar en el universo, sino también a apreciar la increíble complejidad del espacio que nos rodea.</p>
+</div>
+
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById("menu");
+        const btn = document.getElementById("menuBtn");
+        menu.classList.toggle("active");
+        
+        if (menu.classList.contains("active")) {
+            btn.innerHTML = "✕";
+            btn.style.color = "#ffaa00";
+        } else {
+            btn.innerHTML = "☰";
+            btn.style.color = "#ffd700";
+        }
+    }
+
+    function generarEstrellas() {
+        const totalEstrellas = 180;
+        for(let i = 0; i < totalEstrellas; i++) {
+            let s = document.createElement("div");
+            s.className = "star";
+            
+            let size = Math.random() * 2.5 + 1;
+            s.style.width = size + "px";
+            s.style.height = size + "px";
+            
+            const rand = Math.random();
+            if (rand < 0.33) {
+                s.classList.add('star-fast');
+            } else if (rand < 0.66) {
+                s.classList.add('star-med');
+            } else {
+                s.classList.add('star-slow');
+            }
+            
+            s.style.animationDelay = (Math.random() * 8) + "s";
+            s.style.left = Math.random() * 100 + "vw";
+            s.style.top = Math.random() * 100 + "vh";
+            document.body.appendChild(s);
+        }
+    }
+
+    function generarPlanetas() {
+        const colores = [
+            "radial-gradient(circle at 30% 30%, #ffe699, #b45f06)",
+            "radial-gradient(circle at 40% 40%, #a4c2f4, #1c4587)",
+            "radial-gradient(circle at 30% 30%, #e6b8af, #85200c)",
+            "radial-gradient(circle at 30% 30%, #ffe599, #bf9000)",
+            "radial-gradient(circle at 30% 30%, #b6d7a8, #274e13)",
+            "radial-gradient(circle at 40% 40%, #c9daf8, #3c78d8)"
+        ];
+        
+        for(let i = 0; i < 6; i++) {
+            let p = document.createElement("div");
+            p.className = "planeta";
+            
+            let size = Math.random() * 100 + 40;
+            p.style.width = size + "px";
+            p.style.height = size + "px";
+            p.style.left = Math.random() * 100 + "vw";
+            p.style.top = Math.random() * 100 + "vh";
+            p.style.background = colores[Math.floor(Math.random() * colores.length)];
+            
+            document.body.appendChild(p);
+        }
+    }
+
+    function configurarIndicador() {
+        const sections = document.querySelectorAll('h2');
+        const indicator = document.getElementById('indicator');
+        const dots = [];
+        
+        sections.forEach((sec) => {
+            let dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.setAttribute('data-id', sec.id);
+            dot.addEventListener('click', () => {
+                document.getElementById(sec.id).scrollIntoView({ behavior: 'smooth' });
+            });
+            indicator.appendChild(dot);
+            dots.push({ dot, id: sec.id });
+        });
+
+        let ticking = false;
+        
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    actualizarDots(dots, sections);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+
+        actualizarDots(dots, sections);
+    }
+
+    function actualizarDots(dots, sections) {
+        let current = "";
+        const scrollPos = window.scrollY + 150;
+        
+        for (let section of sections) {
+            if (scrollPos >= section.offsetTop) {
+                current = section.getAttribute('id');
+            }
+        }
+        
+        dots.forEach(item => {
+            item.dot.classList.remove('active');
+            if (item.id === current) {
+                item.dot.classList.add('active');
+            }
+        });
+    }
+
+    generarEstrellas();
+    generarPlanetas();
+    configurarIndicador();
+
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById("menu");
+        const btn = document.getElementById("menuBtn");
+        if (menu.classList.contains('active') && !menu.contains(event.target) && !btn.contains(event.target)) {
+            toggleMenu();
+        }
+    });
+</script>
+
+</body>
+</html>
